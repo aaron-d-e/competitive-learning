@@ -1,2 +1,2 @@
-g++ morning.cpp < input.txt
-./a.out
+g++ morning.cpp
+./a.out < input.txt

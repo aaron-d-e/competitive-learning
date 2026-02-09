@@ -1,47 +1,154 @@
 #include <bits/stdc++.h>
+#include <algorithm>
 using namespace std;
 
-// edges available for travel
-vector<pair<int, int>> edges = {{1, 2}, {1, 4}, {2, 5}, {2, 3}, {3, 6},
-                                {4, 5}, {4, 7}, {5, 6}, {5, 8}, {6, 9},
-                                {7, 8}, {8, 9}, {8, 0}};
+set<int> values;
+set<pair<int, int>> visited;
 
-int current_node = 1;  // edge index n - 1
+void generate(int digit, int number) {
+    if (number > 200) return;
 
-void addEdge(vector<vector<int>>& adj, int s, int t) {
-    adj[s].push_back(t);
-}
+    if (visited.count({digit, number}))
+        return;  // stop recursion if already visited
+    visited.insert({digit, number});
 
-// function to iterate through nodes, circular array DOWN,RIGHT,DOWN,RIGHT,etc
-// is there a way to make the graph at runtime to let DFS do all the work
+    if (digit == 1) {
+        generate(2, number);
+        generate(4, number);
+        number = number * 10 + digit;
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(1, number);
+        generate(2, number);
+        generate(4, number);
+    }
+    if (digit == 2) {
+        generate(3, number);
+        generate(5, number);
+        number = number * 10 + digit;
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(2, number);
+        generate(3, number);
+        generate(5, number);
+    }
+    if (digit == 3) {
+        generate(6, number);
+        number = number * 10 + digit;
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(3, number);
+        generate(6, number);
+    }
+    if (digit == 9) {
+        number = number * 10 + digit;
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(9, number);
+    }
+    if (digit == 0) {
+        number = number * 10 + digit;
+        if (number <= 200) {
+            values.insert(number);
+        }
+        if (number != 0) {
+            generate(0, number);
+        }
+    }
+    if (digit == 4) {
+        generate(5, number);
+        generate(7, number);
+        number = number * 10 + digit;
 
-void DFSRec(vector<vector<int>>& adj, vector<bool>& visited, int source) {
-    visited.at(source) = true;
-    cout << source << " ";
-}
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(4, number);
+        generate(5, number);
+        generate(7, number);
+    }
+    if (digit == 5) {
+        generate(6, number);
+        generate(8, number);
+        number = number * 10 + digit;
 
-void DFS(vector<vector<int>>& adj, int source) {
-    vector<bool> visited(10, false);  // 10 nodes in the graph
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(5, number);
+        generate(6, number);
+        generate(8, number);
+    }
+    if (digit == 6) {
+        generate(9, number);
+        number = number * 10 + digit;
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(6, number);
+        generate(9, number);
+    }
+    if (digit == 7) {
+        generate(8, number);
+        number = number * 10 + digit;
 
-    DFSRec(adj, visited, source);
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(7, number);
+        generate(8, number);
+    }
+    if (digit == 8) {
+        generate(0, number);
+        generate(9, number);
+        number = number * 10 + digit;
+
+        if (number <= 200) {
+            values.insert(number);
+        }
+        generate(8, number);
+        generate(0, number);
+        generate(9, number);
+    }
 }
 
 int main() {
-    vector<vector<int>> adj(10);
-    for (auto& e : edges) {
-        addEdge(adj, e.first, e.second);
-    }
+    int num;
+    cin >> num;
 
-    int j = 0;
-    for (const auto& v : adj) {
-        cout << j << ": ";
-        for (const auto& node : v) {
-            cout << node << " ";
+    generate(1, 0);  // generate all possible numbers
+
+    vector<int> sorted_vals;
+    for (const auto& num : values) {
+        sorted_vals.push_back(num);
+    }
+    sort(sorted_vals.begin(), sorted_vals.end());
+
+    for (int i = 0; i < num; i++) {
+        int k;
+        cin >> k;  // read input
+
+        if (find(sorted_vals.begin(), sorted_vals.end(), k) !=
+            sorted_vals.end()) {
+            cout << k << endl;
         }
-        cout << endl;
-        j++;
+        else {
+            for (int i = 0; i < sorted_vals.size() - 1; i++) {
+                if (sorted_vals.at(i) < k && k < sorted_vals.at(i + 1)) {
+                    if (k - sorted_vals.at(i) < sorted_vals.at(i + 1) - k) {
+                        cout << sorted_vals.at(i) << endl;
+                    }
+                    else {
+                        cout << sorted_vals.at(i + 1) << endl;
+                        ;
+                    }
+                }
+            }
+        }
     }
-    DFS(adj, current_node);
-
     return 0;
 }
