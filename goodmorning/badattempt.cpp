@@ -4,7 +4,6 @@
 using namespace std;
 
 // recursive depth first search - make the graph iteratively each recursive call
-// need to account
 
 int nodes[4][3] = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, 0, -1};
 
